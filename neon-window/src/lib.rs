@@ -4,9 +4,11 @@
 
 use objc::runtime::{Object, Sel};
 
-use cocoa::base::{ nil, id, NO};
+use cocoa::base::{ nil, id, YES, NO};
 
-use cocoa::foundation::{NSRect, NSPoint, NSSize, NSAutoreleasePool, NSString};
+use cocoa::foundation::{NSRect, NSPoint, NSSize, NSAutoreleasePool, NSString,
+                        NSDefaultRunLoopMode};
+
 use cocoa::appkit::{NSApp, NSApplication, NSApplicationActivationPolicyRegular, 
                     NSBackingStoreBuffered, NSWindowStyleMask, NSRunningApplication,
                     NSApplicationActivateIgnoringOtherApps, NSWindow};
@@ -61,8 +63,28 @@ fn open_window(mut cx: FunctionContext) -> JsResult<JsString> {
     Ok(cx.string("return from rust"))
 }
 
+fn send_os_events(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+    unsafe {
+        let app = NSApp();
+        let ns_event_mask_any = !0;
+
+        loop {
+            let event = app.nextEventMatchingMask_untilDate_inMode_dequeue_(ns_event_mask_any, nil, NSDefaultRunLoopMode, YES);
+
+            if event == nil {
+                break;
+            }
+
+            let () = msg_send![app, sendEvent:event];
+
+        }
+    }
+
+    Ok(cx.undefined())
+}
 #[neon::main]
 fn main(mut cx: ModuleContext) -> NeonResult<()> {
     cx.export_function("open_window", open_window)?;
+    cx.export_function("send_os_events", send_os_events)?;
     Ok(())
 }

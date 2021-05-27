@@ -15,4 +15,4 @@ objc = "0.2.7"
 [dependencies.neon]
 version = "0.8"
 default-features = false
-features = ["napi-6"]
+features = ["napi-6", "event-queue-api"]
