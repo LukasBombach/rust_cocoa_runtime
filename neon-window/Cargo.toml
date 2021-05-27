@@ -8,6 +8,10 @@ exclude = ["index.node"]
 [lib]
 crate-type = ["cdylib"]
 
+[dependencies]
+cocoa = "0.24.0"
+objc = "0.2.7"
+
 [dependencies.neon]
 version = "0.8"
 default-features = false
